@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STREET VIBE | Estilo que inspira</title>
+    <link rel="IMAGENES\Emblema Street Vibe en Satén Rosa.png">
+    <link rel="stylesheet"href="CSS\style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <span>Envío gratis en compras superiores a $200.000 COP</span>
+        <div class="top-bar-links">
+            <a href="#" id="admin-toggle-btn"><i data-lucide="shield-check"></i> Panel Vendedor</a>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-brand" onclick="switchView('store')">
+            <div class="nav-logo-wrapper">
+                <img src="IMAGENES\Emblema Street Vibe en Satén Rosa.png" alt="Street Vibe Logo" class="brand-logo-img">
+                <div class="brand-text">
+                    <h2>STREET VIBE</h2>
+                    <span>Estilo que inspira</span>
+                </div>
+            </div>
+        </div>
+        <div class="nav-links">
+            <button class="nav-btn active" onclick="filterCategory('all', this)">Todo</button>
+            <button class="nav-btn" onclick="filterCategory('Sudaderas Damas', this)">Sudaderas Damas</button>
+            <button class="nav-btn" onclick="filterCategory('Sudaderas Niñas', this)">Sudaderas Niñas</button>
+        </div>
+        <div class="nav-actions">
+            <button class="icon-btn" onclick="toggleCart()" title="Carrito">
+                <i data-lucide="shopping-bag"></i>
+                <span id="cart-badge" class="badge">0</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Store View -->
+    <main id="store-view" class="main-container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <img src="IMAGENES\Emblema Street Vibe en Satén Rosa.png" alt="Street Vibe Emblema" class="hero-logo-img">
+                <h1>Diseño Atemporal & Exclusivo</h1>
+                <p>Colección diseñada para el movimiento, la comodidad y la expresión sin etiquetas con elegancia y actitud.</p>
+                <button class="cta-btn" onclick="scrollToCatalog()">Explorar Colección</button>
+            </div>
+        </section>
+
+        <!-- Catalog Header -->
+        <div class="catalog-header" id="catalog-section">
+            <h3 id="category-title">Catálogo Completo</h3>
+            <span id="product-count">Mostrando productos</span>
+        </div>
+
+        <!-- Products Grid -->
+        <div id="products-grid" class="products-grid"></div>
+    </main>
+
+    <!-- Login Modal para Vendedor -->
+    <div id="admin-login-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Acceso Restringido - Vendedor</h3>
+                <button class="close-btn" onclick="closeLoginModal()"><i data-lucide="x"></i></button>
+            </div>
+            <form onsubmit="verifySellerLogin(event)">
+                <div class="form-group">
+                    <label>Contraseña de Vendedor</label>
+                    <input type="password" id="seller-password" required placeholder="Ingresa tu clave">
+                </div>
+                <button type="submit" class="submit-order-btn">Ingresar al Panel</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard View (Protegido) -->
+    <main id="admin-view" class="admin-container hidden">
+        <div class="admin-header">
+            <div>
+                <h2>Panel de Administración (Vendedor)</h2>
+                <p>Monitorea tus ventas, ingresos y gestión de inventario en tiempo real.</p>
+            </div>
+            <button class="back-store-btn" onclick="switchView('store')"><i data-lucide="arrow-left"></i> Volver a la Tienda</button>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i data-lucide="dollar-sign"></i></div>
+                <div>
+                    <h4>Ventas Totales</h4>
+                    <h2 id="admin-total-sales">$0 COP</h2>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i data-lucide="shopping-cart"></i></div>
+                <div>
+                    <h4>Órdenes Registradas</h4>
+                    <h2 id="admin-total-orders">0</h2>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i data-lucide="package"></i></div>
+                <div>
+                    <h4>Prendas Vendidas</h4>
+                    <h2 id="admin-total-items">0</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Tabs -->
+        <div class="admin-tabs">
+            <button class="admin-tab-btn active" onclick="switchAdminTab('orders', this)">Historial de Órdenes</button>
+            <button class="admin-tab-btn" onclick="switchAdminTab('inventory', this)">Gestión de Inventario</button>
+        </div>
+
+        <!-- Orders Section -->
+        <div id="admin-orders-section" class="admin-section">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Orden</th>
+                            <th>Cliente</th>
+                            <th>Fecha</th>
+                            <th>Productos</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-orders-table"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Inventory Section -->
+        <div id="admin-inventory-section" class="admin-section hidden">
+            <!-- Formulario para Añadir Nueva Prenda a su Categoría -->
+            <div class="modal-content" style="max-width: 100%; margin-bottom: 24px; box-shadow: 0 6px 20px rgba(240, 205, 218, 0.2);">
+                <div class="modal-header" style="margin-bottom: 16px;">
+                    <h3 style="font-size: 18px;">Añadir Nueva Prenda al Catálogo</h3>
+                </div>
+                <form id="add-product-form" onsubmit="addNewProduct(event)" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; align-items: flex-end;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Nombre de la Prenda</label>
+                        <input type="text" id="new-prod-name" required placeholder="Ej: Sudadera Satén Rose">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Categoría</label>
+                        <select id="new-prod-cat" required>
+                            <option value="sudaderas">Sudaderas</option>
+                            <option value="camisas">Camisas</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Precio (COP)</label>
+                        <input type="number" id="new-prod-price" required placeholder="150000" min="0">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Stock Inicial</label>
+                        <input type="number" id="new-prod-stock" required placeholder="10" min="0">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0; grid-column: 1 / -1;">
+                        <label>Adjuntar Fotos de la Prenda (Selecciona una o varias imágenes)</label>
+                        <input type="file" id="new-prod-files" accept="image/*" multiple required style="padding: 8px;">
+                    </div>
+                    <div style="grid-column: 1 / -1; margin-top: 8px;">
+                        <button type="submit" class="submit-order-btn" style="max-width: 250px;">Añadir Prenda a la Categoría</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Categoría</th>
+                            <th>Precio</th>
+                            <th>Stock Actual</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-inventory-table"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Cart Slide-Over Drawer -->
+    <div id="cart-drawer" class="cart-drawer">
+        <div class="cart-header">
+            <h3>Tu Carrito Street Vibe</h3>
+            <button class="close-btn" onclick="toggleCart()"><i data-lucide="x"></i></button>
+        </div>
+        <div id="cart-items" class="cart-items"></div>
+        <div class="cart-footer">
+            <div class="cart-total-row">
+                <span>Subtotal:</span>
+                <span id="cart-subtotal">$0 COP</span>
+            </div>
+            <p class="cart-tax-note">Impuestos y envío calculados al finalizar</p>
+            <button class="checkout-btn" onclick="openCheckoutModal()">Proceder al Pago</button>
+        </div>
+    </div>
+    <div id="cart-overlay" class="cart-overlay" onclick="toggleCart()"></div>
+
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Finalizar Compra</h3>
+                <button class="close-btn" onclick="closeCheckoutModal()"><i data-lucide="x"></i></button>
+            </div>
+            <form id="checkout-form" onsubmit="processCheckout(event)">
+                <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <input type="text" id="cust-name" required placeholder="Alex Rivera">
+                </div>
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="cust-email" required placeholder="alex@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Dirección de Envío</label>
+                    <input type="text" id="cust-address" required placeholder="Calle 100 # 15-20, Bogotá">
+                </div>
+                <div class="form-group">
+                    <label>Método de Pago</label>
+                    <select id="cust-payment">
+                        <option value="PSE / Transferencia">PSE / Transferencia Bancaria</option>
+                        <option value="Contra Entrega">Pago Contra Entrega</option>
+                    </select>
+                </div>
+                <div class="checkout-summary-box">
+                    <span>Total a Pagar:</span>
+                    <strong id="modal-total-price">$0 COP</strong>
+                </div>
+                <button type="submit" class="submit-order-btn">Confirmar y Pagar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">¡Producto añadido al carrito!</div>
+
+    <script src="JS\script.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
